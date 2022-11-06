@@ -5,19 +5,22 @@ import { chunk } from "lodash";
 import ObjectsToCsv from "objects-to-csv";
 import path from "path";
 
-import { PlayerInfoType } from "./constant";
+import { PlayerInfoType } from "./player-data/constants";
 
 const pathToDataFile = (fileName: string) => {
   return path.resolve(__dirname, "..", "assets", fileName);
 };
 
-async function saveAsCsv(data: PlayerInfoType[]) {
+async function saveAsCsv(data: PlayerInfoType[], filename: string) {
   const csv = new ObjectsToCsv(data);
-  await csv.toDisk(pathToDataFile("data.csv"));
+  await csv.toDisk(pathToDataFile(`${filename}.csv`));
 }
 
-function saveAsJson(data: PlayerInfoType[]) {
-  fs.writeFileSync(pathToDataFile("data.json"), JSON.stringify(data, null, 2));
+function saveAsJson(data: PlayerInfoType[], filename: string) {
+  fs.writeFileSync(
+    pathToDataFile(`${filename}.json`),
+    JSON.stringify(data, null, 2)
+  );
 }
 
 export const csvBool = (): boolean => {
@@ -38,17 +41,33 @@ export const cheerioInstance = (htmlData: string) => {
   return cheerio.load(htmlData);
 };
 
+export function transposeMatrix(matrix: string[][]): string[][] {
+  const res: string[][] = [];
+  for (let i = 0; i < matrix[0].length; i++) {
+    const col = [];
+    for (let j = 0; j < matrix.length; j++) {
+      col.push(matrix[j][i]);
+    }
+    res.push(col);
+  }
+  return res;
+}
+
 export async function saveData(
-  data: PlayerInfoType[],
-  csv: boolean,
-  json: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[],
+  filename: string,
+  options: {
+    csv: boolean;
+    json: boolean;
+  }
 ) {
-  if (csv) {
-    await saveAsCsv(data);
+  if (options.csv) {
+    await saveAsCsv(data, filename);
   }
 
-  if (json) {
-    saveAsJson(data);
+  if (options.json) {
+    saveAsJson(data, filename);
   }
 }
 

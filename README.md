@@ -24,4 +24,4 @@ yarn
 yarn start
 ```
 
-Do note that there are some schools that the application isn't able to scrape the data for but as of writing, there are over 3000 individual statistics that are scrapped.
+Do note that there are some teams that the application isn't able to scrape the data for but as of writing, there are over 3500 individual statistics that are scrapped.

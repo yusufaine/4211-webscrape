@@ -1,19 +1,24 @@
 import {
+  PLAYERS_COL_DATA_SELECTOR,
   createPlayerObject,
-  MainPageType,
   PlayerInfoType,
-  SCHOOL_COL_DATA_SELECTOR,
-} from "./constant";
-import { axiosInstance, cheerioInstance, processConcurrently } from "./utils";
+} from "./constants";
+import { TeamPageInfoType } from "../team-data/constants";
+import {
+  axiosInstance,
+  cheerioInstance,
+  processConcurrently,
+  transposeMatrix,
+} from "../utils";
 
-async function getSchoolColData(htmlData: string): Promise<string[][]> {
+async function getTeamColData(htmlData: string): Promise<string[][]> {
   const $ = cheerioInstance(htmlData);
   const columnData: string[][] = [];
   let playerCount = -1;
 
   let i = 4;
   while (true) {
-    const colData: string[] = $(SCHOOL_COL_DATA_SELECTOR(i))
+    const colData: string[] = $(PLAYERS_COL_DATA_SELECTOR(i))
       .text()
       .split("\n")
       .map((v) => v.trim())
@@ -52,32 +57,20 @@ function toTeamObject(name: string, matrix: string[][]): PlayerInfoType[] {
   return teamArray;
 }
 
-function transposeMatrix(matrix: string[][]): string[][] {
-  const res: string[][] = [];
-  for (let i = 0; i < matrix[0].length; i++) {
-    const col = [];
-    for (let j = 0; j < matrix.length; j++) {
-      col.push(matrix[j][i]);
-    }
-    res.push(col);
-  }
-  return res;
-}
-
 export async function formTeams(
-  schoolHref: MainPageType[]
+  teamHref: TeamPageInfoType[]
 ): Promise<PlayerInfoType[]> {
   const res: PlayerInfoType[] = [];
   const queryFuncs: (() => Promise<void>)[] = [];
-  const timeouts: MainPageType[] = [];
-  for (const { href, name } of schoolHref) {
+  const timeouts: TeamPageInfoType[] = [];
+  for (const { href, name } of teamHref) {
     queryFuncs.push(async () => {
       try {
         const { data } = await axiosInstance.get(href);
         if (!data) {
           throw new Error(`unable to get data for ${href}`);
         }
-        const teamByStat = await getSchoolColData(data);
+        const teamByStat = await getTeamColData(data);
         const teamByPlayers = toTeamObject(name, teamByStat);
 
         console.log({ message: name + " completed" });
@@ -88,6 +81,8 @@ export async function formTeams(
     });
   }
   await processConcurrently(queryFuncs, 5);
-  if (timeouts.length !== 0) console.error(timeouts);
+  if (timeouts.length !== 0) {
+    console.error(timeouts, { length: timeouts.length });
+  }
   return res;
 }
