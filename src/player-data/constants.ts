@@ -1,4 +1,3 @@
-// * 22 keys from website, excludes team name as it's manual
 export type PlayerInfoType = {
   team: string;
   position: string;
