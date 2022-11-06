@@ -90,29 +90,3 @@ export function createPlayerObject(
     points_per_set: data[21],
   };
 }
-
-export const NUMBER_KEY_MAP: Record<number, string> = {
-  0: "school",
-  1: "position",
-  2: "matches",
-  3: "sets",
-  4: "kills",
-  5: "kills_per_set",
-  6: "errors",
-  7: "total_attacks",
-  8: "hitting_percentage",
-  9: "assists",
-  10: "assists_per_set",
-  11: "service_aces",
-  12: "service_aces_per_set",
-  13: "reception",
-  14: "reception_errors",
-  15: "digs",
-  16: "digs_per_set",
-  17: "block_solo",
-  18: "block_assist",
-  19: "block_total",
-  20: "blocks_per_set",
-  21: "points",
-  22: "points_per_set",
-};
