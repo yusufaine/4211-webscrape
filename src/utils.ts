@@ -11,14 +11,6 @@ const pathToDataFile = (fileName: string) => {
   return path.resolve(__dirname, "..", "assets", fileName);
 };
 
-export const axiosInstance = new Axios({
-  baseURL: "https://naiastats.prestosports.com",
-});
-
-export const cheerioInstance = (htmlData: string) => {
-  return cheerio.load(htmlData);
-};
-
 async function saveAsCsv(data: PlayerInfoType[]) {
   const csv = new ObjectsToCsv(data);
   await csv.toDisk(pathToDataFile("data.csv"));
@@ -27,6 +19,14 @@ async function saveAsCsv(data: PlayerInfoType[]) {
 function saveAsJson(data: PlayerInfoType[]) {
   fs.writeFileSync(pathToDataFile("data.json"), JSON.stringify(data, null, 2));
 }
+
+export const axiosInstance = new Axios({
+  baseURL: "https://naiastats.prestosports.com",
+});
+
+export const cheerioInstance = (htmlData: string) => {
+  return cheerio.load(htmlData);
+};
 
 export async function saveData(
   data: PlayerInfoType[],
@@ -40,17 +40,6 @@ export async function saveData(
     await saveAsCsv(data);
   }
 }
-
-// export function writeToCsv(data: PlayerInfoType[]) {
-//   // const csvStream = fs.createWriteStream(
-//   //   path.resolve(__dirname, "..", "assets", "data.csv")
-//   // );
-//   const csvStringArray = toCsvStringArray(data);
-//   for (const line of csvStringArray) {
-//     csvStream.write(line + EOL);
-//   }
-//   csvStream.end();
-// }
 
 export async function wait(ms: number): Promise<void> {
   return new Promise((res) => setTimeout(() => res(undefined), ms));
