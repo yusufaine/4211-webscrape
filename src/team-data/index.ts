@@ -1,5 +1,4 @@
 import {
-  HREF_LINK,
   INVALID_TEAM,
   MAINPAGE_ROUTE,
   TEAM_HREF_NAME_SELECTOR,
@@ -47,7 +46,7 @@ async function getTeamOverallData(): Promise<string[][]> {
 }
 
 export async function getTeamNameAndHref(): Promise<TeamPageInfoType[]> {
-  const namesAndHrefs: TeamPageInfoType[] = [];
+  const nameAndTeamRoute: TeamPageInfoType[] = [];
   const htmlData = await getMainPageHtml();
   const $ = cheerioInstance(htmlData);
   $(TEAM_HREF_NAME_SELECTOR).each((_id, el) => {
@@ -61,11 +60,11 @@ export async function getTeamNameAndHref(): Promise<TeamPageInfoType[]> {
       return;
     }
 
-    const href = $(el).attr("href");
-    if (!href) {
+    const route = $(el).attr("href");
+    if (!route) {
       throw new Error("unable to get team href");
     }
-    namesAndHrefs.push({ name, href: HREF_LINK(href) });
+    nameAndTeamRoute.push({ name, route });
   });
-  return namesAndHrefs;
+  return nameAndTeamRoute;
 }

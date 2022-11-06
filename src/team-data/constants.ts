@@ -2,15 +2,15 @@ import { PlayerInfoType } from "src/player-data/constants";
 
 export type TeamPageInfoType = {
   name: string;
-  href: string;
+  route: string;
 };
 
 export type TeamInfoType = Omit<PlayerInfoType, "position"> & {
   rank: string;
 };
 
-export const HREF_LINK = (href: string) => {
-  return `${href}/?view=lineup&r=0&pos=`;
+export const ADD_LINEUP_PARAM = (route: string) => {
+  return `${route}/?view=lineup&r=0&pos=`;
 };
 
 export const INVALID_TEAM = new Set<string>([
