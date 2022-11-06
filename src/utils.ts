@@ -20,6 +20,16 @@ function saveAsJson(data: PlayerInfoType[]) {
   fs.writeFileSync(pathToDataFile("data.json"), JSON.stringify(data, null, 2));
 }
 
+export const csvBool = (): boolean => {
+  const dotenvCsv = process.env.CSV_BOOL ?? "false";
+  return dotenvCsv.toLowerCase() === "true";
+};
+
+export const jsonBool = (): boolean => {
+  const dotenvJson = process.env.JSON_BOOL ?? "false";
+  return dotenvJson.toLowerCase() === "true";
+};
+
 export const axiosInstance = new Axios({
   baseURL: "https://naiastats.prestosports.com",
 });
@@ -30,14 +40,15 @@ export const cheerioInstance = (htmlData: string) => {
 
 export async function saveData(
   data: PlayerInfoType[],
-  json: boolean,
-  csv: boolean
+  csv: boolean,
+  json: boolean
 ) {
-  if (json) {
-    saveAsJson(data);
-  }
   if (csv) {
     await saveAsCsv(data);
+  }
+
+  if (json) {
+    saveAsJson(data);
   }
 }
 

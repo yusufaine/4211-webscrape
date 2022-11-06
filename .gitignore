@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+# generated assets
+assets/*.csv
+assets/*.json
+
 # Logs
 logs
 *.log
@@ -33,3 +37,5 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+.env
