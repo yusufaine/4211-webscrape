@@ -1,12 +1,14 @@
 import {
-  PLAYERS_COL_DATA_SELECTOR,
   createPlayerObject,
   PlayerInfoType,
+  PLAYERS_COL_DATA_SELECTOR,
 } from "./constants";
 import { ADD_LINEUP_PARAM, TeamPageInfoType } from "../team-data/constants";
 import {
   axiosInstance,
   cheerioInstance,
+  csvBool,
+  jsonBool,
   processConcurrently,
   saveData,
   transposeMatrix,
@@ -45,15 +47,16 @@ async function getTeamColData(htmlData: string): Promise<string[][]> {
       playerCount = colData.length;
     }
 
-    if (colData.length == 0) {
-      return teamColData;
+    if (colData.length != 0) {
+      if (colData.length > playerCount) {
+        teamColData.push(colData.splice(0, playerCount));
+      } else {
+        teamColData.push(colData);
+      }
+      continue;
     }
 
-    if (colData.length > playerCount) {
-      teamColData.push(colData.splice(0, playerCount));
-    } else {
-      teamColData.push(colData);
-    }
+    return teamColData;
   }
 }
 
@@ -61,8 +64,10 @@ export async function formTeams(
   teamHref: TeamPageInfoType[]
 ): Promise<PlayerInfoType[]> {
   const teams: PlayerInfoType[] = [];
+
   const queryFuncs: (() => Promise<void>)[] = [];
   const errorLogs: (TeamPageInfoType & { error: string })[] = [];
+
   for (const { route, name } of teamHref) {
     const href = ADD_LINEUP_PARAM(route);
     queryFuncs.push(async () => {
@@ -81,9 +86,15 @@ export async function formTeams(
       }
     });
   }
+
   await processConcurrently(queryFuncs);
+
   if (errorLogs.length !== 0) {
-    saveData(errorLogs, "playerdata-error", { csv: true, json: false });
+    const csv = csvBool();
+    const json = jsonBool();
+
+    saveData(errorLogs, "playerdata-error", { csv, json });
   }
+
   return teams;
 }

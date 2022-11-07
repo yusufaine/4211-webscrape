@@ -30,25 +30,31 @@ export async function formTeamOverallData(): Promise<TeamInfoType[]> {
 
 async function getTeamOverallData(): Promise<string[][]> {
   const teamColData: string[][] = [];
+
   const htmlData = await getMainPageHtml();
   const $ = cheerioInstance(htmlData);
+
   for (let i = 1; ; i++) {
     const colData: string[] = [];
     $(TEAM_COL_SELECTOR(i)).each((_id, el) => {
       const res = $(el).text().trim();
       colData.push(res);
     });
-    if (colData.length == 0) {
-      return transposeMatrix(teamColData);
+
+    if (colData.length != 0) {
+      teamColData.push(colData);
+      continue;
     }
-    teamColData.push(colData);
+    return transposeMatrix(teamColData);
   }
 }
 
 export async function getTeamNameAndHref(): Promise<TeamPageInfoType[]> {
   const nameAndTeamRoute: TeamPageInfoType[] = [];
+
   const htmlData = await getMainPageHtml();
   const $ = cheerioInstance(htmlData);
+
   $(TEAM_HREF_NAME_SELECTOR).each((_id, el) => {
     const name = $(el).text();
     if (!name) {
@@ -66,5 +72,6 @@ export async function getTeamNameAndHref(): Promise<TeamPageInfoType[]> {
     }
     nameAndTeamRoute.push({ name, route });
   });
+
   return nameAndTeamRoute;
 }

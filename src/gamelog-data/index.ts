@@ -7,6 +7,8 @@ import {
 import {
   axiosInstance,
   cheerioInstance,
+  csvBool,
+  jsonBool,
   processConcurrently,
   saveData,
   transposeMatrix,
@@ -51,6 +53,7 @@ export async function getGamelog(
   nameAndTeamRoute: TeamPageInfoType[]
 ): Promise<GamelogInfoType[]> {
   const gameLogs: GamelogInfoType[] = [];
+
   const queryFuncs: (() => Promise<void>)[] = [];
   const errorLogs: (TeamPageInfoType & { error: string })[] = [];
 
@@ -75,8 +78,13 @@ export async function getGamelog(
   }
 
   await processConcurrently(queryFuncs);
+
   if (errorLogs.length !== 0) {
-    saveData(errorLogs, "gamelog-error", { csv: true, json: false });
+    const csv = csvBool();
+    const json = jsonBool();
+
+    saveData(errorLogs, "gamelog-error", { csv, json });
   }
+
   return gameLogs;
 }
